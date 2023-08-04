@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-sample-app
+  label:
+    app: golang-sample-app
+spec:
+  revisionHistoryLimit: 5
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: golang-sample-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: golang-sample-app
+    spec:
+      containers:
+      - name: golang-sample-app
+        image: dante77777/golang-sample-app:18
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: RABBITMQ_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-default-user
+              key: username
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-default-user
+              key: password
+        - name: RABBITMQ_HOST
+          value: rabbitmq
